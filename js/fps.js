@@ -34,7 +34,7 @@ function updateResource(totalElapsedTime, derivatives) {
 
     // Display resource value
     console.log("Resource:", resource);
-    document.getElementById("resource").innerHTML = "Resource: " + resource;
+    document.getElementById("resource").innerHTML = "Resource: " + resource.toFixed(2);
 }
 
 // Placeholder variables
