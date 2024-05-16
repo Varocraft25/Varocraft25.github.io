@@ -1,15 +1,25 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>FPS Website</title>
+    <title>FPS Chart</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-
 </head>
 <body>
-    <h1 id="fps"></h1>
+    <div>
+        <label for="pointCount">Cantidad de Puntos en el Gráfico:</label>
+        <input type="number" id="pointCount" value="20" min="5" max="100">
+    </div>
+    <div>
+        <label for="updateTime">Tiempo (ms):</label>
+        <input type="number" id="updateTime" value="100" min="100" max="10000">
+    </div>
+    <button id="startSimulation">Iniciar Simulación</button>
     <canvas id="fpsChart" width="400" height="200"></canvas>
+    <div>
+        <span id="fps"></span>
+    </div>
     <script src="js/fps.js"></script>
 </body>
 </html>
