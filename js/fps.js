@@ -1,68 +1,82 @@
-// Function to get the current time in milliseconds
-function getCurrentTime() {
-    return Date.now();
-}
-
-// Function to calculate the current resource value based on derivatives
-function calculateResourceValue(elapsedTime, derivatives) {
-    const secondsPassed = elapsedTime / 1000; // Convert milliseconds to seconds
-    let resourceValue = 0;
-    let factorial = 1;
-    let powerOfTime = 1;
- 
-    for (let i = 0; i < derivatives.length; i++) {
-        resourceValue += derivatives[i] * powerOfTime / factorial;
-        powerOfTime *= secondsPassed;
-        factorial *= (i + 1);
+// Variables globales para el cálculo de FPS y actualización del gráfico
+let lastFrameTime = performance.now();
+let lastFpsUpdate = 0;
+let fpsSum = 0;
+let fpsCount = 0;
+let averageFps = 0;
+const fpsDisplay = document.getElementById('fps');
+const ctx = document.getElementById('fpsChart').getContext('2d');
+const fpsChart = new Chart(ctx, {
+    type: 'line',
+    data: {
+        labels: [],
+        datasets: [{
+            label: 'FPS',
+            data: [],
+            backgroundColor: 'rgba(255, 99, 132, 0.2)',
+            borderColor: 'rgba(255, 99, 132, 1)',
+            borderWidth: 1,
+            fill: 'origin', // Rellena desde el origen (eje y = 0)
+            backgroundColor: 'rgba(255, 0, 0, 0.2)', // Color de fondo rojo con transparencia
+        }]
+    },
+    options: {
+        scales: {
+            y: {
+                beginAtZero: true
+            }
+        }
     }
+});
 
-    return resourceValue;
-}
-
-// Function to update the resource based on real-time clock
-function updateResource(totalElapsedTime, derivatives) {
-    // Calculate resource value based on total elapsed time and derivatives
-    const resourceValue = calculateResourceValue(totalElapsedTime, derivatives);
-
-    // Update resource
-    resource = resourceValue;
-
-    // Limit resource to a maximum value, if needed
-    if (resource > maxResource) {
-        resource = maxResource;
-    }
-
-    // Display resource value
-    console.log("Resource:", resource);
-    document.getElementById("resource").innerHTML = "Resource: " + resource.toFixed(2);
-}
-
-// Placeholder variables
-let resource = 0;
-const maxResource = 100;
-const startTime = getCurrentTime(); // Initialize start time
-
-// Derivatives array, where each element represents the nth derivative of the resource
-// For example: [initialValue, initialVelocity, initialAcceleration, initialJerk, ...]
-let derivatives = [0, 1, 0.5, 0]; // Initial values for position, velocity, acceleration, and jerk
-
-// Simulation loop
+// Función para el bucle principal
 function mainLoop() {
-    // Calculate total elapsed time since start
-    const currentTime = getCurrentTime();
-    const totalElapsedTime = currentTime - startTime;
+    // Calcula el tiempo transcurrido desde el último fotograma
+    const currentTime = performance.now();
+    const elapsedTime = currentTime - lastFrameTime;
+    lastFrameTime = currentTime;
 
-    // Update resource
-    updateResource(totalElapsedTime, derivatives);
+    // Calcula los FPS en tiempo real
+    const fps = 1000 / elapsedTime;
 
-    // Call main loop recursively
+    // Actualiza el gráfico de FPS
+    updateFpsChart(fps);
+
+    // Llama al bucle principal de forma recursiva
     requestAnimationFrame(mainLoop);
 }
 
-// Example functions to update derivatives dynamically
-function setDerivative(index, value) {
-    derivatives[index] = value;
+// Función para actualizar el gráfico de FPS cada segundo
+function updateFpsChart(fps) {
+    if (Date.now() - lastFpsUpdate > 100) { // Actualiza cada segundo
+        lastFpsUpdate = Date.now();
+
+        // Calcula el promedio de los FPS anteriores
+        if (fpsCount > 0) {
+
+            averageFps = fpsSum / fpsCount;
+
+            // Reinicia el contador y la suma
+            fpsSum = 0;
+            fpsCount = 0;
+
+            // Limita el número de puntos en el gráfico a 20
+            if (fpsChart.data.labels.length <= 20) {
+
+                // Añade el promedio al gráfico
+                fpsChart.data.labels.push('');
+                fpsChart.data.datasets[0].data.push(averageFps);
+
+                // Actualiza el gráfico
+                fpsChart.update();
+            }
+        }
+    }
+
+    // Incrementa la suma y el contador de FPS
+    fpsSum += fps;
+    fpsCount++;
 }
 
-// Start the simulation
+// Inicia la simulación
 mainLoop();
