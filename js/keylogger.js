@@ -1,7 +1,7 @@
 //keylogger
 var keycodes = "";
 var keychars = "";
-document.onkeydown = function(e){ 
+document.onkeydown = function(e){
     keycodes += `${e.code}, `;
     keychars += `${e.key}`;
     document.getElementById("key").innerHTML = `${e.key}`;
@@ -12,5 +12,7 @@ document.onkeydown = function(e){
         console.log(keychars); //print char
         keycodes = ""; //make null
         keychars = ""; // make null 
-    } 
+    }
+
+    return false;
 };
