@@ -46,10 +46,12 @@ function startSimulation(pointCount, updateTime, fpsChart) {
     const fps = 1000 / elapsedTime;
 
     // Actualiza el gráfico de FPS
-    updateFpsChart(fps, pointCount, updateTime, fpsChart);
+    let stop = updateFpsChart(fps, pointCount, updateTime, fpsChart);
 
     // Llama al bucle principal de forma recursiva
-    requestAnimationFrame(() => startSimulation(pointCount, updateTime, fpsChart));
+    if (stop == false) {
+        requestAnimationFrame(() => startSimulation(pointCount, updateTime, fpsChart));
+    }
 }
 
 
@@ -69,6 +71,8 @@ function updateFpsChart(fps, pointCount, updateTime, fpsChart) {
             // Reinicia el contador y la suma
             fpsSum = 0;
             fpsCount = 0;
+            
+            console.log(fpsChart.data.labels.length + " " + pointCount)
 
             // Limita el número de puntos en el gráfico a pointCount
             if (fpsChart.data.labels.length <= pointCount) {
@@ -79,6 +83,8 @@ function updateFpsChart(fps, pointCount, updateTime, fpsChart) {
 
                 // Actualiza el gráfico
                 fpsChart.update();
+            } else {
+                return true
             }
         }
     }
@@ -86,6 +92,8 @@ function updateFpsChart(fps, pointCount, updateTime, fpsChart) {
     // Incrementa la suma y el contador de FPS
     fpsSum += fps;
     fpsCount++;
+
+    return false
 }
 
 document.getElementById('startSimulation').addEventListener('click', function() {
